@@ -5,7 +5,7 @@ uint16_t mix_pwm_duty = 0;
 uint32_t spray_pwm_duty = 0;
 
 /**
- * @brief  同时设置搅拌电机的速度
+ * @brief  设置搅拌电机的速度
  */
 void Motor_MIX_SPEED_Set(uint8_t MIX_SPEED)
 {
@@ -17,7 +17,7 @@ void Motor_MIX_SPEED_Set(uint8_t MIX_SPEED)
 }
 
 /**
- * @brief  同时设置喷涂电机的速度
+ * @brief  设置喷涂电机的速度
  */
 void Motor_SPRAY_SPEED_Set(uint8_t SPRAY_SPEED)
 {

@@ -1,12 +1,12 @@
 #include "GND_Scan.h"
 #include "usb.h"
 volatile uint32_t sys_tick;
-volatile uint8_t GND_State = 1;
-volatile bool LED_flag = 0;
-volatile uint8_t TX_flag = 0;
+volatile uint8_t GND_State = 1;//接地状态，1表示未接地，0表示已接地，2表示接地不良
+volatile bool LED_flag = 0;// LED状态标志，0表示LED灭，1表示LED亮
+volatile uint8_t TX_flag = 0;// 发送状态标志，0表示不发送，1表示发送
 
-uint8_t Sec_Cnt = 0;
-uint16_t pulse_count;
+uint8_t Sec_Cnt = 0;// 秒计数器，每60秒更新一次自动模式计数
+uint16_t pulse_count;// 脉冲计数器，每秒更新一次，根据脉冲数量判断接地状态
 /**
  * @brief  定时器更新中断回调函数（每1秒触发一次）
  */

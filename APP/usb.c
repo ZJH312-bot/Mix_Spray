@@ -96,7 +96,7 @@ static void USB_RunCmd(uint8_t Motor_Control, uint8_t spray_motor_speed, uint8_t
 void USB_Rx_Parse(uint8_t *buf, uint32_t *len)
 {
     uint32_t i;
-    // 填充到最小6字节缓冲区
+    // 填充缓冲区
     for(i = 0; i < *len && usb_rx_cnt < 8; i++)
     {
         usb_rx_buf[usb_rx_cnt++] = buf[i];
@@ -116,7 +116,6 @@ void USB_Rx_Parse(uint8_t *buf, uint32_t *len)
             // CRC校验通过才执行
             if(recv_sum8 == calc_sum8)
             {
-							usb_rx_cnt=0;
                 USB_RunCmd(usb_rx_buf[2], usb_rx_buf[3], usb_rx_buf[4], usb_rx_buf[5], usb_rx_buf[6], &system_state_data);	
             }
         }
