@@ -115,7 +115,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    if(GND_State==1)// 已接地，正常工作
+    if(GND_State==0)// 已接地，正常工作
     {
       HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2, GPIO_PIN_SET); // LED2接地指示灯亮
       

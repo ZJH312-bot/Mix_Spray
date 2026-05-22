@@ -1,7 +1,7 @@
 #include "GND_Scan.h"
 #include "usb.h"
 volatile uint32_t sys_tick;
-volatile uint8_t GND_State = 0;
+volatile uint8_t GND_State = 1;
 volatile bool LED_flag = 0;
 volatile uint8_t TX_flag = 0;
 
@@ -20,14 +20,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     // 范围判断：正常市电频率48~52Hz → 1秒48~52个脉冲
     if (pulse_count >= 45 && pulse_count <= 55)
     {
-      GND_State = 1; // 已接地
+      GND_State = 0; // 已接地
     }
     else  if(pulse_count < 45&&pulse_count > 0) // 脉冲过少，可能未接地或接地不良
     {
       GND_State = 2; // 接地不良
     }else if(pulse_count == 0) // 无脉冲，未接地
     {
-      GND_State = 0; // 未接地
+      GND_State = 1; // 未接地
     }
 		pulse_count = 0;
 		
@@ -38,7 +38,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
       {
         Sec_Cnt = 0;
         if(system_state_data.Auto_State == 0) // 当前在搅拌时间计数
-        {
+        { 
+          
             system_state_data.Current_Auto_continuous_time_Cnt++;
             if(system_state_data.Current_Auto_continuous_time_Cnt >= system_state_data.Auto_continuous_time)
             {
