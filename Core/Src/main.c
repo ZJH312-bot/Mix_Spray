@@ -169,19 +169,19 @@ int main(void)
           Motor_MIX_SPEED_Set(0);
         }
      }
-    if(USB_Receive_flag)//USB数据处理
-    {
-      USB_Rx_Parse(usb_Receive_buf, &usb_Receive_Len);
-      USB_Receive_flag = 0;
-      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET); // LED1指示灯亮，表示上下位机交互正常
-    }
-    if(TX_flag==1)
+    if(TX_flag==1&&USB_Receive_flag==0)
 		{
 			USB_Tx_SendFrame(0x00,system_state_data.Motor_Control,system_state_data.spray_motor_speed,
                                   system_state_data.mix_motor_speed,system_state_data.Auto_continuous_time,
                                   system_state_data.Auto_interval_time,GND_State);//上位机数据上报
 			TX_flag=0;
 		}
+		if(USB_Receive_flag)//USB数据处理
+    {
+      USB_Rx_Parse(usb_Receive_buf, &usb_Receive_Len);
+      USB_Receive_flag = 0;
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET); // LED1指示灯亮，表示上下位机交互正常
+    }
 
   }
   /* USER CODE END 3 */

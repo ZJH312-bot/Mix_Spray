@@ -116,6 +116,7 @@ void USB_Rx_Parse(uint8_t *buf, uint32_t *len)
             // CRC校验通过才执行
             if(recv_sum8 == calc_sum8)
             {
+							usb_rx_cnt=0;
                 USB_RunCmd(usb_rx_buf[2], usb_rx_buf[3], usb_rx_buf[4], usb_rx_buf[5], usb_rx_buf[6], &system_state_data);	
             }
         }

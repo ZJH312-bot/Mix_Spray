@@ -37,24 +37,29 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
       if(Sec_Cnt >= 60) // 每1分钟更新一次自动模式计数
       {
         Sec_Cnt = 0;
-        if(system_state_data.Auto_State == 0) // 当前在搅拌时间计数
+        if(system_state_data.Auto_State ==0) // 当前在搅拌时间计数
         { 
-          
-            system_state_data.Current_Auto_continuous_time_Cnt++;
-            if(system_state_data.Current_Auto_continuous_time_Cnt >= system_state_data.Auto_continuous_time)
+            if(system_state_data.Auto_continuous_time >0)
             {
-                system_state_data.Current_Auto_continuous_time_Cnt = 0;
-                system_state_data.Auto_State = 1; // 切换到间隔时间计数
+              system_state_data.Current_Auto_continuous_time_Cnt++;
+              if(system_state_data.Current_Auto_continuous_time_Cnt >= system_state_data.Auto_continuous_time)
+              {
+                  system_state_data.Current_Auto_continuous_time_Cnt = 0;
+                  system_state_data.Auto_State = 1; // 切换到间隔时间计数
+              }
             }
         }
         else // 当前在间隔时间计数
         {
+          if(system_state_data.Auto_interval_time >0)
+          {
             system_state_data.Current_Auto_interval_time_Cnt++;
             if(system_state_data.Current_Auto_interval_time_Cnt >= system_state_data.Auto_interval_time)
             {
                 system_state_data.Current_Auto_interval_time_Cnt = 0;
                 system_state_data.Auto_State = 0; // 切换到搅拌时间计数
             }
+          }
         }
       }
     }
