@@ -15,6 +15,8 @@ ssh/main.o: ..\Core\Src\main.c ..\Core\Inc\main.h \
   ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal_dma.h \
   ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal_dma_ex.h \
   ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal_cortex.h \
+  ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal_adc.h \
+  ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal_adc_ex.h \
   ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal_flash.h \
   ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal_flash_ex.h \
   ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal_i2c.h \
@@ -26,7 +28,8 @@ ssh/main.o: ..\Core\Src\main.c ..\Core\Inc\main.h \
   ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal_pwr_ex.h \
   ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal_tim.h \
   ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal_tim_ex.h \
-  ..\Core\Inc\dma.h ..\Core\Inc\tim.h ..\USB_DEVICE\App\usb_device.h \
+  ..\Core\Inc\adc.h ..\Core\Inc\dma.h ..\Core\Inc\tim.h \
+  ..\USB_DEVICE\App\usb_device.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_def.h \
   ..\USB_DEVICE\Target\usbd_conf.h ..\Core\Inc\gpio.h \
   ..\APP\Motor_Control.h ..\APP\usb.h ..\APP\GND_Scan.h \
@@ -34,4 +37,5 @@ ssh/main.o: ..\Core\Src\main.c ..\Core\Inc\main.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Inc\usbd_cdc.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_core.h \
-  ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h
+  ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h \
+  ..\APP\bsp_ADC.h

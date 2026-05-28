@@ -64,8 +64,8 @@ void MX_TIM2_Init(void)
   {
     Error_Handler();
   }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_OC1REF;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_ENABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
@@ -152,7 +152,7 @@ void MX_TIM14_Init(void)
 
   /* USER CODE END TIM14_Init 1 */
   htim14.Instance = TIM14;
-  htim14.Init.Prescaler = 47999;
+  htim14.Init.Prescaler = 47;
   htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim14.Init.Period = 999;
   htim14.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;

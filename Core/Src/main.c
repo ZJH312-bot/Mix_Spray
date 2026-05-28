@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "adc.h"
 #include "dma.h"
 #include "tim.h"
 #include "usb_device.h"
@@ -29,7 +30,7 @@
 #include "usb.h"
 #include "GND_Scan.h"
 #include "usbd_cdc_if.h"
-
+#include "bsp_ADC.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -98,7 +99,13 @@ int main(void)
   USB_SoftReset();
   MX_USB_DEVICE_Init();
   MX_TIM14_Init();
+  MX_ADC_Init();
   /* USER CODE BEGIN 2 */
+  // ADC 必须校准（F0 必加）
+  HAL_ADCEx_Calibration_Start(&hadc);
+  HAL_Delay(5);
+  // 启动 ADC DMA 双路采集（循环模式）
+  HAL_ADC_Start_DMA(&hadc, (uint32_t*)adc_buf, 2);
 	HAL_TIM_PWM_Start_DMA(&htim3, TIM_CHANNEL_1, (uint32_t*)&mix_pwm_duty, 1);	// 启动搅拌电机
 	HAL_TIM_PWM_Start_DMA(&htim2, TIM_CHANNEL_1, (uint32_t*)&spray_pwm_duty, 1);	// 启动喷涂电机
   HAL_TIM_Base_Start_IT(&htim14);  // 启动1秒更新中断
@@ -115,6 +122,13 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    if(Current_flag==1)
+    {
+      ADC_Get_Current(); // 获取电流值并更新 motor1_cur 和 motor2_cur
+      Motor_SPRAY_Current_Limit(); // 喷涂电机限流
+      Motor_MIX_Current_Limit();   // 搅拌电机限流
+      Current_flag=0;
+    }
     if(GND_State==0)// 已接地，正常工作
     {
       HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2, GPIO_PIN_SET); // LED2接地指示灯亮
@@ -174,6 +188,9 @@ int main(void)
 			USB_Tx_SendFrame(0x00,system_state_data.Motor_Control,system_state_data.spray_motor_speed,
                                   system_state_data.mix_motor_speed,system_state_data.Auto_continuous_time,
                                   system_state_data.Auto_interval_time,GND_State);//上位机数据上报
+
+      History_SPRAY_duty_percent = system_state_data.spray_motor_speed; // 更新历史占空比
+      History_MIX_duty_percent = system_state_data.mix_motor_speed; // 更新历史占空比
 			TX_flag=0;
 		}
 		if(USB_Receive_flag)//USB数据处理
@@ -200,9 +217,12 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI48|RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI14|RCC_OSCILLATORTYPE_HSI48
+                              |RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
+  RCC_OscInitStruct.HSI14State = RCC_HSI14_ON;
+  RCC_OscInitStruct.HSI14CalibrationValue = 16;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL6;
