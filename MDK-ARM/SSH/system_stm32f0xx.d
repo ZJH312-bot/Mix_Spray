@@ -2,12 +2,19 @@ ssh/system_stm32f0xx.o: ..\Core\Src\system_stm32f0xx.c \
   ..\Drivers\CMSIS\Device\ST\STM32F0xx\Include\stm32f0xx.h \
   ..\Drivers\CMSIS\Device\ST\STM32F0xx\Include\stm32f042x6.h \
   ..\Drivers\CMSIS\Include\core_cm0.h \
+  D:\keil\32\ARM\ARMCLANG\Bin\..\include\stdint.h \
+  ..\Drivers\CMSIS\Include\cmsis_version.h \
+  ..\Drivers\CMSIS\Include\cmsis_compiler.h \
+  ..\Drivers\CMSIS\Include\cmsis_armclang.h \
+  D:\keil\32\ARM\ARMCLANG\Bin\..\include\arm_compat.h \
+  D:\keil\32\ARM\ARMCLANG\Bin\..\include\arm_acle.h \
   ..\Drivers\CMSIS\Device\ST\STM32F0xx\Include\system_stm32f0xx.h \
   ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal.h \
   ..\Core\Inc\stm32f0xx_hal_conf.h \
   ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal_rcc.h \
   ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal_def.h \
   ..\Drivers\STM32F0xx_HAL_Driver\Inc\Legacy\stm32_hal_legacy.h \
+  D:\keil\32\ARM\ARMCLANG\Bin\..\include\stddef.h \
   ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal_rcc_ex.h \
   ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal_gpio.h \
   ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal_gpio_ex.h \
