@@ -1,5 +1,6 @@
 #include "GND_Scan.h"
 #include "usb.h"
+#include "Motor_Control.h"
 volatile uint32_t sys_tick;
 volatile uint8_t GND_State = 1;//接地状态，1表示未接地，0表示已接地，2表示接地不良
 volatile bool LED_flag = 0;// LED状态标志，0表示LED灭，1表示LED亮
@@ -10,13 +11,21 @@ uint8_t Sec_Cnt = 0;// 秒计数器，每60秒更新一次自动模式计数
 uint16_t MS_Cnt = 0;// 毫秒计数器，每1000ms更新一次接地状态
 uint16_t pulse_count;// 脉冲计数器，每秒更新一次，根据脉冲数量判断接地状态
 /**
- * @brief  定时器更新中断回调函数（每1秒触发一次）
+ * @brief  定时器更新中断回调函数（每1ms触发一次）
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim->Instance == TIM14)
   {
     Current_flag = 1; // 设置电流控制标志，主循环里会调用限流函数
+    if(start_flag==1&&system_state_data.History_MIX_duty_percent>system_state_data.mix_motor_speed) 
+    {
+      system_state_data.mix_motor_speed++; // 逐步增加搅拌电机占空比，缓坡启动
+    }
+    if(start_flag==1&&system_state_data.History_SPRAY_duty_percent>system_state_data.spray_motor_speed) 
+    {
+      system_state_data.spray_motor_speed++; // 逐步增加喷涂电机占空比，缓坡启动
+    }
     MS_Cnt++;
     if(MS_Cnt >= 1000) // 每1000ms更新一次
     {

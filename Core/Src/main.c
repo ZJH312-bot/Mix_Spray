@@ -39,7 +39,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -100,6 +99,7 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_TIM14_Init();
   MX_ADC_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   // ADC 必须校准（F0 必加）
   HAL_ADCEx_Calibration_Start(&hadc);
@@ -108,6 +108,7 @@ int main(void)
   HAL_ADC_Start_DMA(&hadc, (uint32_t*)adc_buf, 2);
 	HAL_TIM_PWM_Start_DMA(&htim3, TIM_CHANNEL_1, (uint32_t*)&mix_pwm_duty, 1);	// 启动搅拌电机
 	HAL_TIM_PWM_Start_DMA(&htim2, TIM_CHANNEL_1, (uint32_t*)&spray_pwm_duty, 1);	// 启动喷涂电机
+  HAL_TIM_Base_Start(&htim1);
   HAL_TIM_Base_Start_IT(&htim14);  // 启动1秒更新中断
   HAL_TIM_IC_Start_IT(&htim14, TIM_CHANNEL_1);  // 开启捕获中断
 	
@@ -185,9 +186,9 @@ int main(void)
      }
     if(TX_flag==1&&USB_Receive_flag==0)
 		{
-			USB_Tx_SendFrame(0x00,system_state_data.Motor_Control,system_state_data.spray_motor_speed,
-                                  system_state_data.mix_motor_speed,system_state_data.Auto_continuous_time,
-                                  system_state_data.Auto_interval_time,GND_State);//上位机数据上报
+//			USB_Tx_SendFrame(0x00,system_state_data.Motor_Control,system_state_data.spray_motor_speed,
+//                                  system_state_data.mix_motor_speed,system_state_data.Auto_continuous_time,
+//                                  system_state_data.Auto_interval_time,GND_State);//上位机数据上报
 			TX_flag=0;
 		}
 		if(USB_Receive_flag)//USB数据处理
@@ -195,8 +196,7 @@ int main(void)
       USB_Rx_Parse(usb_Receive_buf, &usb_Receive_Len);
       USB_Receive_flag = 0;
       HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET); // LED1指示灯亮，表示上下位机交互正常
-      History_SPRAY_duty_percent = system_state_data.spray_motor_speed; // 更新历史占空比
-      History_MIX_duty_percent = system_state_data.mix_motor_speed; // 更新历史占空比
+      start_flag = 1; // 接收到USB数据，设置启动标志
     }
 
   }

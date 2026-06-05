@@ -36,4 +36,4 @@ ssh/gnd_scan.o: ..\APP\GND_Scan.c ..\APP\GND_Scan.h \
   ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal_pwr_ex.h \
   ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal_tim.h \
   ..\Drivers\STM32F0xx_HAL_Driver\Inc\stm32f0xx_hal_tim_ex.h \
-  ..\APP\usb.h
+  ..\APP\usb.h ..\APP\Motor_Control.h

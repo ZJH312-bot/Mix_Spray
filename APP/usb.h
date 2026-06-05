@@ -23,6 +23,8 @@ typedef struct
    uint8_t Motor_Control;       // 电机控制命令
    uint8_t mix_motor_speed;     // 搅拌电机速度
    uint8_t spray_motor_speed;   // 喷涂电机速度
+   uint8_t History_MIX_duty_percent;     // 搅拌电机历史占空比
+   uint8_t History_SPRAY_duty_percent;   // 喷涂电机历史占空比
    uint8_t Auto_continuous_time;// 自动连续搅拌时间
    uint8_t Auto_interval_time;  // 自动搅拌间隔时间
    uint8_t Current_Auto_continuous_time_Cnt;  // 当前自动连续搅拌时间计数
