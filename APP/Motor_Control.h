@@ -10,13 +10,9 @@ extern "C" {
 
 extern uint16_t mix_pwm_duty ;
 extern uint32_t spray_pwm_duty;
-extern volatile uint8_t  start_flag ;    // 衰减前目标占空比 0~100
-extern volatile uint8_t  Current_Time_flag ;
 
-void Motor_MIX_SPEED_Set(uint8_t MIX_SPEED);
-void Motor_SPRAY_SPEED_Set(uint8_t SPRAY_SPEED);
-void Motor_SPRAY_Current_Limit(void);
-void Motor_MIX_Current_Limit(void);
+void Motor_Spray_Current_Limit_Control(uint16_t spray_current, uint16_t read_sprary_current);
+void Motor_Mix_Current_Limit_Control(uint16_t mix_current, uint16_t read_mix_current);
 
 #ifdef __cplusplus
 }

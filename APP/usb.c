@@ -2,17 +2,17 @@
 #include <string.h>
 #include "usb_device.h"
 #include "usbd_cdc_if.h"
-
+#include "PID.h"
 System_State_data system_state_data = {0};
 
 
 // 最小发送缓冲区 固定10字节
 static uint8_t usb_tx_buf[10];
-// 最小接收缓冲区 固定9字节
-static uint8_t usb_rx_buf[9];
+// 最小接收缓冲区 固定17字节
+static uint8_t usb_rx_buf[18];
 static uint8_t usb_rx_cnt = 0;
 
-uint8_t usb_Receive_buf[9];
+uint8_t usb_Receive_buf[18];
 uint32_t usb_Receive_Len;
 volatile uint8_t USB_Receive_flag = 0;
 
@@ -81,14 +81,15 @@ static uint8_t CheckSum_Calc(const uint8_t *buf, uint16_t len)
     return 0;
 }
 
-static void USB_RunCmd(uint8_t Motor_Control, uint8_t spray_motor_speed, uint8_t mix_motor_speed, 
-                        uint8_t Auto_continuous_time, uint8_t Auto_interval_time,System_State_data *state_data)
+static void USB_RunCmd(RECEIVE_DATA *recv_data, System_State_data *state_data)
 {
-   state_data->Motor_Control = Motor_Control;
-   state_data->History_SPRAY_duty_percent = spray_motor_speed;
-   state_data->History_MIX_duty_percent = mix_motor_speed;
-   state_data->Auto_continuous_time = Auto_continuous_time;
-   state_data->Auto_interval_time = Auto_interval_time;
+   state_data->Motor_Control = recv_data->Motor_Control;
+   state_data->spray_motor_current = recv_data->spray_motor_current;
+   state_data->mix_motor_current = recv_data->mix_motor_current;
+   state_data->Auto_continuous_time = recv_data->Auto_continuous_time;
+   state_data->Auto_interval_time = recv_data->Auto_interval_time;
+   Mix_Current_Inter.kp = recv_data->Kp;
+   Mix_Current_Inter.ki = recv_data->Ki;   
 }
 /**
  * @brief  USB接收入口，直接放在 CDC_Receive_FS 里调用
@@ -97,26 +98,27 @@ void USB_Rx_Parse(uint8_t *buf, uint32_t *len)
 {
     uint32_t i;
     // 填充缓冲区
-    for(i = 0; i < *len && usb_rx_cnt < 8; i++)
+    for(i = 0; i < *len && usb_rx_cnt < 18; i++)
     {
         usb_rx_buf[usb_rx_cnt++] = buf[i];
     }
 
-    // 收满一帧6字节 开始解析
-    if(usb_rx_cnt >= 8)
+    // 收满一帧18字节 开始解析
+    if(usb_rx_cnt >= 18)
     {
+        RECEIVE_DATA *recv_data = (RECEIVE_DATA *)usb_rx_buf;
         // 校验帧头
-        if(usb_rx_buf[0] == FRAME_HEAD)
+        if(recv_data->Head == FRAME_HEAD)
         {
            
             // 取出收到的sum8
-            uint8_t recv_sum8 =  usb_rx_buf[7];
-            uint8_t calc_sum8 = CheckSum_Calc(usb_rx_buf, 7);
+            uint8_t recv_sum8 = recv_data->sum8;
+            uint8_t calc_sum8 = CheckSum_Calc(usb_rx_buf, 17);
 
             // CRC校验通过才执行
             if(recv_sum8 == calc_sum8)
             {
-                USB_RunCmd(usb_rx_buf[2], usb_rx_buf[3], usb_rx_buf[4], usb_rx_buf[5], usb_rx_buf[6], &system_state_data);	
+                USB_RunCmd(recv_data, &system_state_data);	
             }
         }
 

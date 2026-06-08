@@ -18,14 +18,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   if (htim->Instance == TIM14)
   {
     Current_flag = 1; // 设置电流控制标志，主循环里会调用限流函数
-    if(start_flag==1&&system_state_data.History_MIX_duty_percent>system_state_data.mix_motor_speed) 
-    {
-      system_state_data.mix_motor_speed++; // 逐步增加搅拌电机占空比，缓坡启动
-    }
-    if(start_flag==1&&system_state_data.History_SPRAY_duty_percent>system_state_data.spray_motor_speed) 
-    {
-      system_state_data.spray_motor_speed++; // 逐步增加喷涂电机占空比，缓坡启动
-    }
     MS_Cnt++;
     if(MS_Cnt >= 1000) // 每1000ms更新一次
     {

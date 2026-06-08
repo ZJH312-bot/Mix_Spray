@@ -72,6 +72,10 @@ void ADC_Get_Current(void)
         motor2_cur = (uint16_t)((sum2 + (cnt2 / 2)) / cnt2);
     }
 
+    // buf[0] = 0x55;
+    // buf[1] = motor2_cur & 0xFF;
+    // buf[2] = (motor2_cur >> 8) & 0xFF;
+    // CDC_Transmit_FS((uint8_t*)buf, 3);
     sprintf(buf, "%hu,%hu\n", motor1_cur, motor2_cur);
     CDC_Transmit_FS((uint8_t*)buf, strlen(buf));
 }
