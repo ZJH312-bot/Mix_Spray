@@ -45,7 +45,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
       {
         GND_State = 1; // 未接地
       }
-      pulse_count = 0;
+      // if(pulse_count >=2000)GND_State = 2;
+      // pulse_count = 0;
       
       if(GET_BIT(system_state_data.Motor_Control, Auto_MIX_STATE))// 搅拌电机自动模式
       {
@@ -90,3 +91,11 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
     pulse_count++; 
   }
 }
+// volatile uint8_t adc_ready_flag = 0;  // ADC就绪标志
+
+// void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim) {
+// 	if (htim->Instance == TIM1 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_4) {
+//           adc_ready_flag = 1; // 设置 ADC 就绪标志
+//          pulse_count++; 
+//     }
+// }

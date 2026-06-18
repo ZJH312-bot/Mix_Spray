@@ -1,14 +1,14 @@
 #include "Motor_Control.h"
 #include "bsp_ADC.h"
 #include "usb.h"
-
+#include "tim.h"
 // 电流限流阈值 (单位：mA，1ADC单位≈0.806mA)
 #define Motor_SPRAY_CURRENT_MAX_LIMIT     2000   // 喷涂电机最大工作电流
 #define Motor_SPRAY_CURRENT_DANGER        2500   // 喷涂电机危险电流，触发快速降速
 #define Motor_MIX_CURRENT_MAX_LIMIT       300    // 搅拌电机最大工作电流
 #define Motor_MIX_CURRENT_DANGER          350    // 搅拌电机危险电流，触发快速降速
 
-#define Motor_SPRAY_MIX_CURRENT_HYSTERESIS    100    // 电流回差，防止限流频繁抖动
+#define Motor_SPRAY_MIX_CURRENT_HYSTERESIS    50    // 电流回差，防止限流频繁抖动
 #define Motor_SPRAY_MIX_DUTY_MIN          10     // 电机最小运行占空比
 #define Motor_SPRAY_MIX_DUTY_MAX          100    // 电机最大运行占空比
 
@@ -47,6 +47,7 @@ void Motor_SPRAY_SPEED_Set(uint8_t SPRAY_SPEED)
     // 转换为20kHz PWM比较值
     // 比较值 = 转速百分比 × 自动重装载值(2399) / 100
     spray_pwm_duty = (uint32_t)SPRAY_SPEED * 2399 / 100;
+
 }
 
 /**

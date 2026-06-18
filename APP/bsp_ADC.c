@@ -1,14 +1,17 @@
 #include "bsp_ADC.h"
 #include "usbd_cdc_if.h"
+#include "tim.h"
 
-volatile uint16_t adc_buf[2] = {0};
+extern DMA_HandleTypeDef hdma_adc;
+
+static  uint16_t adc_buf[2] = {0};
 volatile uint16_t motor1_cur = 0;
 volatile uint16_t motor2_cur = 0;
 
 #define ADC1_ZERO_OFFSET 0
 #define ADC2_ZERO_OFFSET 0
 #define MVA_WINDOW 16
-
+#define ADC_CNT 20
 static uint16_t buf1[MVA_WINDOW] = {0};
 static uint16_t sum1 = 0;
 static uint8_t idx1 = 0;
@@ -18,16 +21,36 @@ static uint16_t buf2[MVA_WINDOW] = {0};
 static uint16_t sum2 = 0;
 static uint8_t idx2 = 0;
 static uint8_t cnt2 = 0;
+volatile uint16_t ch2[ADC_CNT] = {0};  // 通道2
+volatile uint16_t ch3[ADC_CNT] = {0};  // 通道3
+volatile uint32_t adc_cnt = 0;    // ADC就绪标志
+uint64_t ADC1_Sum = 0;
+uint64_t ADC2_Sum = 0;
 
+void ADC_Start(void)
+{
+     // 启动 ADC DMA 双路采集（循环模式）
+       HAL_ADC_Start_DMA(&hadc,(uint32_t*)adc_buf, 2);
 
+}
 char buf[32];
-
 void ADC_Get_Current(void)
 {   
-    uint16_t adc1_raw = 0;
-    if(adc_buf[0] > ADC1_ZERO_OFFSET)
+		uint16_t adc1_raw = 0;
+    uint16_t ADC1_Avage = 0;
+    uint16_t ADC2_Avage = 0;
+		
+	
+    ADC1_Avage = ADC1_Sum/adc_cnt;          // 取平均
+
+    ADC2_Avage = ADC2_Sum/adc_cnt;          // 取平均
+	
+	ADC1_Sum = 0;
+    ADC2_Sum = 0;
+	adc_cnt = 0;
+    if(ADC1_Avage > ADC1_ZERO_OFFSET)
     {
-        adc1_raw = adc_buf[0] - ADC1_ZERO_OFFSET;
+        adc1_raw = ADC1_Avage - ADC1_ZERO_OFFSET;
     }else
     {
         adc1_raw = 0;
@@ -49,9 +72,9 @@ void ADC_Get_Current(void)
     }
     
     uint16_t adc2_raw = 0;
-    if(adc_buf[1] > ADC2_ZERO_OFFSET)
+    if(ADC2_Avage > ADC2_ZERO_OFFSET)
     {
-        adc2_raw = adc_buf[1] - ADC2_ZERO_OFFSET;
+        adc2_raw = ADC2_Avage - ADC2_ZERO_OFFSET;
     }else
     {
         adc2_raw = 0;
@@ -72,6 +95,17 @@ void ADC_Get_Current(void)
         motor2_cur = (uint16_t)((sum2 + (cnt2 / 2)) / cnt2);
     }
 
-    sprintf(buf, "%hu,%hu\n", motor1_cur, motor2_cur);
-    CDC_Transmit_FS((uint8_t*)buf, strlen(buf));
+    // sprintf(buf, "%hu,%hu\n", motor1_cur, motor2_cur);
+    // CDC_Transmit_FS((uint8_t*)buf, strlen(buf));
+}
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
+{
+    if (hadc->Instance == ADC1) {
+		__disable_irq();
+         ADC1_Sum += adc_buf[0];  // 通道2
+         ADC2_Sum += adc_buf[1];  // 通道3
+         adc_cnt++;
+        //  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1); // ADC转换完成指示灯闪烁
+		__enable_irq();
+    }
 }

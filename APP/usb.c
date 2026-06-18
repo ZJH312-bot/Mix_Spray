@@ -86,7 +86,9 @@ static void USB_RunCmd(uint8_t Motor_Control, uint8_t spray_motor_speed, uint8_t
 {
    state_data->Motor_Control = Motor_Control;
    state_data->History_SPRAY_duty_percent = spray_motor_speed;
+   state_data->spray_motor_speed = spray_motor_speed;
    state_data->History_MIX_duty_percent = mix_motor_speed;
+   state_data->mix_motor_speed = mix_motor_speed;
    state_data->Auto_continuous_time = Auto_continuous_time;
    state_data->Auto_interval_time = Auto_interval_time;
 }

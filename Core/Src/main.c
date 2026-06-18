@@ -87,7 +87,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+		USB_SoftReset();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -95,25 +95,21 @@ int main(void)
   MX_DMA_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
-  USB_SoftReset(); // 强制重新枚举,放在MX_USB_DEVICE_Init()前面，确保每次上电都能正确枚举
   MX_USB_DEVICE_Init();
   MX_TIM14_Init();
   MX_ADC_Init();
-  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   // ADC 必须校准（F0 必加）
   HAL_ADCEx_Calibration_Start(&hadc);
   HAL_Delay(5);
   // 启动 ADC DMA 双路采集（循环模式）
-  HAL_ADC_Start_DMA(&hadc, (uint32_t*)adc_buf, 2);
+	  ADC_Start();
+	 
 	HAL_TIM_PWM_Start_DMA(&htim3, TIM_CHANNEL_1, (uint32_t*)&mix_pwm_duty, 1);	// 启动搅拌电机
 	HAL_TIM_PWM_Start_DMA(&htim2, TIM_CHANNEL_1, (uint32_t*)&spray_pwm_duty, 1);	// 启动喷涂电机
-  HAL_TIM_Base_Start(&htim1);
   HAL_TIM_Base_Start_IT(&htim14);  // 启动1秒更新中断
   HAL_TIM_IC_Start_IT(&htim14, TIM_CHANNEL_1);  // 开启捕获中断
-	
 	// USB_SoftReset(); // 强制重新枚举,放在MX_USB_DEVICE_Init()前面，确保每次上电都能正确枚举
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -125,36 +121,35 @@ int main(void)
     /* USER CODE BEGIN 3 */
     if(Current_flag==1)
     {
+      // 
       ADC_Get_Current(); // 获取电流值并更新 motor1_cur 和 motor2_cur
-      Motor_SPRAY_Current_Limit(); // 喷涂电机限流
-      Motor_MIX_Current_Limit();   // 搅拌电机限流
+     Motor_SPRAY_Current_Limit(); // 喷涂电机限流
+     Motor_MIX_Current_Limit();   // 搅拌电机限流
       Current_flag=0;
     }
     if(GND_State==0)// 已接地，正常工作
     {
-      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2, GPIO_PIN_SET); // LED2接地指示灯亮
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET); // LED2接地指示灯亮
       
     }else if(GND_State==2) // 接地不良，进入警告模式
     {
 
-      if(LED_flag==1)HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_2); // LED2接地指示灯闪烁
+      if(LED_flag==1)HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1); // LED2接地指示灯闪烁
     }
     else      // 未接地，进入安全模式
     {
-      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2, GPIO_PIN_RESET); // LED2接地指示灯灭
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET); // LED2接地指示灯灭
     }
 		
 		if(GET_BIT(system_state_data.Motor_Control, SPRAY_STATE))// 喷涂电机打开
     {
-      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET); 
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET); 
+      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET); 
 			if(system_state_data.spray_motor_speed<10)system_state_data.spray_motor_speed=10;
       Motor_SPRAY_SPEED_Set(system_state_data.spray_motor_speed);
     }
     else
     {
-      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET); 
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET); 
+      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET); 
       Motor_SPRAY_SPEED_Set(0);
     }
     if(GET_BIT(system_state_data.Motor_Control, Auto_MIX_STATE))// 搅拌电机自动模式
@@ -186,16 +181,16 @@ int main(void)
      }
     if(TX_flag==1&&USB_Receive_flag==0)
 		{
-//			USB_Tx_SendFrame(0x00,system_state_data.Motor_Control,system_state_data.spray_motor_speed,
-//                                  system_state_data.mix_motor_speed,system_state_data.Auto_continuous_time,
-//                                  system_state_data.Auto_interval_time,GND_State);//上位机数据上报
+			USB_Tx_SendFrame(0x00,system_state_data.Motor_Control,system_state_data.spray_motor_speed,
+                                  system_state_data.mix_motor_speed,system_state_data.Auto_continuous_time,
+                                  system_state_data.Auto_interval_time,GND_State);//上位机数据上报
 			TX_flag=0;
 		}
 		if(USB_Receive_flag)//USB数据处理
     {
       USB_Rx_Parse(usb_Receive_buf, &usb_Receive_Len);
       USB_Receive_flag = 0;
-      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET); // LED1指示灯亮，表示上下位机交互正常
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET); // LED1指示灯亮，表示上下位机交互正常
       start_flag = 1; // 接收到USB数据，设置启动标志
     }
 
