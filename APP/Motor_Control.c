@@ -5,8 +5,8 @@
 // 电流限流阈值 (单位：mA，1ADC单位≈0.806mA)
 #define Motor_SPRAY_CURRENT_MAX_LIMIT     2000   // 喷涂电机最大工作电流
 #define Motor_SPRAY_CURRENT_DANGER        2500   // 喷涂电机危险电流，触发快速降速
-#define Motor_MIX_CURRENT_MAX_LIMIT       300    // 搅拌电机最大工作电流
-#define Motor_MIX_CURRENT_DANGER          350    // 搅拌电机危险电流，触发快速降速
+#define Motor_MIX_CURRENT_MAX_LIMIT       1000    // 搅拌电机最大工作电流
+#define Motor_MIX_CURRENT_DANGER          1500    // 搅拌电机危险电流，触发快速降速
 
 #define Motor_SPRAY_MIX_CURRENT_HYSTERESIS    50    // 电流回差，防止限流频繁抖动
 #define Motor_SPRAY_MIX_DUTY_MIN          10     // 电机最小运行占空比

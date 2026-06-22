@@ -33,7 +33,9 @@ void ADC_Start(void)
        HAL_ADC_Start_DMA(&hadc,(uint32_t*)adc_buf, 2);
 
 }
+
 char buf[32];
+
 void ADC_Get_Current(void)
 {   
 		uint16_t adc1_raw = 0;
@@ -95,8 +97,8 @@ void ADC_Get_Current(void)
         motor2_cur = (uint16_t)((sum2 + (cnt2 / 2)) / cnt2);
     }
 
-    // sprintf(buf, "%hu,%hu\n", motor1_cur, motor2_cur);
-    // CDC_Transmit_FS((uint8_t*)buf, strlen(buf));
+    //  sprintf(buf, "%hu,%hu\n", motor1_cur, motor2_cur);
+    //  CDC_Transmit_FS((uint8_t*)buf, strlen(buf));
 }
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
@@ -105,7 +107,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
          ADC1_Sum += adc_buf[0];  // 通道2
          ADC2_Sum += adc_buf[1];  // 通道3
          adc_cnt++;
-        //  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1); // ADC转换完成指示灯闪烁
+          HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1); // ADC转换完成指示灯闪烁
 		__enable_irq();
     }
 }

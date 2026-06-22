@@ -104,7 +104,7 @@ int main(void)
   HAL_Delay(5);
   // 启动 ADC DMA 双路采集（循环模式）
 	  ADC_Start();
-	 
+//	 HAL_TIM_Base_Start(&htim1);
 	HAL_TIM_PWM_Start_DMA(&htim3, TIM_CHANNEL_1, (uint32_t*)&mix_pwm_duty, 1);	// 启动搅拌电机
 	HAL_TIM_PWM_Start_DMA(&htim2, TIM_CHANNEL_1, (uint32_t*)&spray_pwm_duty, 1);	// 启动喷涂电机
   HAL_TIM_Base_Start_IT(&htim14);  // 启动1秒更新中断
@@ -123,8 +123,8 @@ int main(void)
     {
       // 
       ADC_Get_Current(); // 获取电流值并更新 motor1_cur 和 motor2_cur
-     Motor_SPRAY_Current_Limit(); // 喷涂电机限流
-     Motor_MIX_Current_Limit();   // 搅拌电机限流
+      Motor_SPRAY_Current_Limit(); // 喷涂电机限流
+      Motor_MIX_Current_Limit();   // 搅拌电机限流
       Current_flag=0;
     }
     if(GND_State==0)// 已接地，正常工作
@@ -182,8 +182,8 @@ int main(void)
     if(TX_flag==1&&USB_Receive_flag==0)
 		{
 			USB_Tx_SendFrame(0x00,system_state_data.Motor_Control,system_state_data.spray_motor_speed,
-                                  system_state_data.mix_motor_speed,system_state_data.Auto_continuous_time,
-                                  system_state_data.Auto_interval_time,GND_State);//上位机数据上报
+                                 system_state_data.mix_motor_speed,system_state_data.Auto_continuous_time,
+                                 system_state_data.Auto_interval_time,GND_State);//上位机数据上报
 			TX_flag=0;
 		}
 		if(USB_Receive_flag)//USB数据处理
