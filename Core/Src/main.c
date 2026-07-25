@@ -129,7 +129,7 @@ int main(void)
     }
     if(GND_State==0)// 已接地，正常工作
     {
-      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET); // LED2接地指示灯亮
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET); // LED2接地指示灯灭
       
     }else if(GND_State==2) // 接地不良，进入警告模式
     {
@@ -138,30 +138,33 @@ int main(void)
     }
     else      // 未接地，进入安全模式
     {
-      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET); // LED2接地指示灯灭
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET); // LED2接地指示灯亮
     }
 		
 		if(GET_BIT(system_state_data.Motor_Control, SPRAY_STATE))// 喷涂电机打开
     {
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET); 
-			if(system_state_data.spray_motor_speed<10)system_state_data.spray_motor_speed=10;
+			if(system_state_data.History_SPRAY_duty_percent<10)system_state_data.History_SPRAY_duty_percent=10;
       Motor_SPRAY_SPEED_Set(system_state_data.spray_motor_speed);
     }
     else
     {
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET); 
-      Motor_SPRAY_SPEED_Set(0);
+      system_state_data.spray_motor_speed = 0; // 关闭喷涂电机，重置占空比
+      system_state_data.History_SPRAY_duty_percent = 0; // 关闭喷涂电机，重置历史占空比
+      Motor_SPRAY_SPEED_Set(system_state_data.spray_motor_speed);
     }
     if(GET_BIT(system_state_data.Motor_Control, Auto_MIX_STATE))// 搅拌电机自动模式
     {
       if(system_state_data.Auto_State == 0) // 当前在搅拌时间计数
       {
-        if(system_state_data.mix_motor_speed<10)system_state_data.mix_motor_speed=10;
+        if(system_state_data.History_MIX_duty_percent<10)system_state_data.History_MIX_duty_percent=10;
         Motor_MIX_SPEED_Set(system_state_data.mix_motor_speed);
       }
       else // 当前在间隔时间计数
       {
-        Motor_MIX_SPEED_Set(0);
+          system_state_data.mix_motor_speed = 0; // 手动关闭搅拌电机，重置占空比
+          Motor_MIX_SPEED_Set(system_state_data.mix_motor_speed);
       }
      }
      else
@@ -171,12 +174,14 @@ int main(void)
         system_state_data.Auto_State = 0; // 退出自动模式，重置自动模式状态
          if(GET_BIT(system_state_data.Motor_Control, MIX_STATE))// 搅拌电机手动打开
         {
-          if(system_state_data.mix_motor_speed<10)system_state_data.mix_motor_speed=10;
+          if(system_state_data.History_MIX_duty_percent<10)system_state_data.History_MIX_duty_percent=10;
           Motor_MIX_SPEED_Set(system_state_data.mix_motor_speed);
         }
         else
         {
-          Motor_MIX_SPEED_Set(0);
+          system_state_data.mix_motor_speed = 0; // 手动关闭搅拌电机，重置占空比
+          system_state_data.History_MIX_duty_percent = 0; // 关闭搅拌电机，重置历史占空比
+          Motor_MIX_SPEED_Set(system_state_data.mix_motor_speed);
         }
      }
     if(TX_flag==1&&USB_Receive_flag==0)
@@ -191,7 +196,7 @@ int main(void)
       USB_Rx_Parse(usb_Receive_buf, &usb_Receive_Len);
       USB_Receive_flag = 0;
       HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET); // LED1指示灯亮，表示上下位机交互正常
-      start_flag = 1; // 接收到USB数据，设置启动标志
+      // start_flag = 1; // 接收到USB数据，设置启动标志
     }
 
   }

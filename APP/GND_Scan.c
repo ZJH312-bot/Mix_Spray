@@ -9,7 +9,7 @@ volatile uint8_t Current_flag = 0;// 电流控制标志，0表示不控制，1�
 
 uint8_t Sec_Cnt = 0;// 秒计数器，每60秒更新一次自动模式计数
 uint16_t MS_Cnt = 0;// 毫秒计数器，每1000ms更新一次接地状态
-uint16_t pulse_count;// 脉冲计数器，每秒更新一次，根据脉冲数量判断接地状态
+volatile uint16_t pulse_count;// 脉冲计数器，每秒更新一次，根据脉冲数量判断接地状态
 /**
  * @brief  定时器更新中断回调函数（每1ms触发一次）
  */
@@ -18,14 +18,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   if (htim->Instance == TIM14)
   {
     Current_flag = 1; // 设置电流控制标志，主循环里会调用限流函数
-    if(start_flag==1&&system_state_data.History_MIX_duty_percent>system_state_data.mix_motor_speed) 
-    {
-      system_state_data.mix_motor_speed++; // 逐步增加搅拌电机占空比，缓坡启动
-    }
-    if(start_flag==1&&system_state_data.History_SPRAY_duty_percent>system_state_data.spray_motor_speed) 
-    {
-      system_state_data.spray_motor_speed++; // 逐步增加喷涂电机占空比，缓坡启动
-    }
+    // if(start_flag==1&&system_state_data.History_MIX_duty_percent>system_state_data.mix_motor_speed) 
+    // {
+    //   system_state_data.mix_motor_speed++; // 逐步增加搅拌电机占空比，缓坡启动
+    // }
+    // if(start_flag==1&&system_state_data.History_SPRAY_duty_percent>system_state_data.spray_motor_speed) 
+    // {
+    //   system_state_data.spray_motor_speed++; // 逐步增加喷涂电机占空比，缓坡启动
+    // }
     MS_Cnt++;
     if(MS_Cnt >= 1000) // 每1000ms更新一次
     {
@@ -34,7 +34,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		  TX_flag = 1;
 		
       // 范围判断：正常市电频率48~52Hz → 1秒48~52个脉冲
-      if (pulse_count >= 45 && pulse_count <= 55)
+      if (pulse_count >= 45)
       {
         GND_State = 0; // 已接地
       }
@@ -46,7 +46,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         GND_State = 1; // 未接地
       }
       // if(pulse_count >=2000)GND_State = 2;
-      // pulse_count = 0;
+       pulse_count = 0;
       
       if(GET_BIT(system_state_data.Motor_Control, Auto_MIX_STATE))// 搅拌电机自动模式
       {

@@ -5,8 +5,8 @@
 // 电流限流阈值 (单位：mA，1ADC单位≈0.806mA)
 #define Motor_SPRAY_CURRENT_MAX_LIMIT     2000   // 喷涂电机最大工作电流
 #define Motor_SPRAY_CURRENT_DANGER        2500   // 喷涂电机危险电流，触发快速降速
-#define Motor_MIX_CURRENT_MAX_LIMIT       1000    // 搅拌电机最大工作电流
-#define Motor_MIX_CURRENT_DANGER          1500    // 搅拌电机危险电流，触发快速降速
+#define Motor_MIX_CURRENT_MAX_LIMIT       3000    // 搅拌电机最大工作电流
+#define Motor_MIX_CURRENT_DANGER          3500    // 搅拌电机危险电流，触发快速降速
 
 #define Motor_SPRAY_MIX_CURRENT_HYSTERESIS    50    // 电流回差，防止限流频繁抖动
 #define Motor_SPRAY_MIX_DUTY_MIN          10     // 电机最小运行占空比
@@ -70,7 +70,7 @@ void Motor_SPRAY_Current_Limit(void)
         if (danger_cnt >= DEBOUNCE_CNT) 
         {
             danger_cnt = 0;
-            start_flag = 0; 
+            // start_flag = 0; 
             system_state_data.spray_motor_speed = (uint8_t)(system_state_data.spray_motor_speed * 95 / 100);
             if (system_state_data.spray_motor_speed < Motor_SPRAY_MIX_DUTY_MIN) 
                 system_state_data.spray_motor_speed = Motor_SPRAY_MIX_DUTY_MIN;
@@ -132,7 +132,7 @@ void Motor_MIX_Current_Limit(void)
         if (danger_cnt >= DEBOUNCE_CNT) 
         {
             danger_cnt = 0;
-            start_flag = 0;
+            //  start_flag = 0;
             system_state_data.mix_motor_speed = (uint8_t)(system_state_data.mix_motor_speed * 95 / 100);
             if (system_state_data.mix_motor_speed < Motor_SPRAY_MIX_DUTY_MIN) 
                 system_state_data.mix_motor_speed = Motor_SPRAY_MIX_DUTY_MIN;

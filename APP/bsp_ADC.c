@@ -30,7 +30,7 @@ uint64_t ADC2_Sum = 0;
 void ADC_Start(void)
 {
      // 启动 ADC DMA 双路采集（循环模式）
-       HAL_ADC_Start_DMA(&hadc,(uint32_t*)adc_buf, 2);
+    HAL_ADC_Start_DMA(&hadc,(uint32_t*)adc_buf, 2);
 
 }
 
@@ -38,7 +38,7 @@ char buf[32];
 
 void ADC_Get_Current(void)
 {   
-		uint16_t adc1_raw = 0;
+	uint16_t adc1_raw = 0;
     uint16_t ADC1_Avage = 0;
     uint16_t ADC2_Avage = 0;
 		
