@@ -81,7 +81,7 @@ void ADC_Get_Current(void)
     {
         adc2_raw = 0;
     }
-    uint16_t raw_current2 = (uint16_t)( (int32_t)adc2_raw * 3300 / 4095 );
+    uint16_t raw_current2 = (uint16_t)( (int32_t)adc2_raw * 6600 / 4095 );//5mΩ采样电阻，100倍放大倍数
 
 
     sum2 += raw_current2;
@@ -107,7 +107,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
          ADC1_Sum += adc_buf[0];  // 通道2
          ADC2_Sum += adc_buf[1];  // 通道3
          adc_cnt++;
-          HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1); // ADC转换完成指示灯闪烁
+        //   HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1); // ADC转换完成指示灯闪烁
 		__enable_irq();
     }
 }

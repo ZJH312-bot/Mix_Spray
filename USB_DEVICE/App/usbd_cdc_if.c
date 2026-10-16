@@ -270,10 +270,11 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
 static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
 {
   /* USER CODE BEGIN 6 */
-  if(*Len > 0 && *Len <= 8)  
+      usb_Receive_Len = *Len;
+
+  if(*Len > 0 && *Len <= 9)  
   {
     memcpy(usb_Receive_buf, Buf, *Len);
-    usb_Receive_Len = *Len;
     USB_Receive_flag = 1;
   }
 

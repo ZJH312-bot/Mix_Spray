@@ -42,11 +42,11 @@ ssh/main.o: ..\Core\Src\main.c ..\Core\Inc\main.h \
   D:\keil\32\ARM\ARMCLANG\Bin\..\include\stdio.h \
   D:\keil\32\ARM\ARMCLANG\Bin\..\include\stdlib.h \
   D:\keil\32\ARM\ARMCLANG\Bin\..\include\string.h ..\Core\Inc\gpio.h \
-  ..\APP\Motor_Control.h ..\APP\usb.h ..\APP\GND_Scan.h \
-  D:\keil\32\ARM\ARMCLANG\Bin\..\include\stdbool.h \
+  ..\APP\Motor_Control.h ..\APP\usb.h ..\APP\USB_Link.h \
+  ..\APP\GND_Scan.h D:\keil\32\ARM\ARMCLANG\Bin\..\include\stdbool.h \
   ..\USB_DEVICE\App\usbd_cdc_if.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Inc\usbd_cdc.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_core.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h \
-  ..\APP\bsp_ADC.h
+  ..\APP\bsp_ADC.h ..\APP\Level_Detect.h

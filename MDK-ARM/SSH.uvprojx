@@ -768,6 +768,16 @@
               <FilePath>..\APP\usb.h</FilePath>
             </File>
             <File>
+              <FileName>USB_Link.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\USB_Link.c</FilePath>
+            </File>
+            <File>
+              <FileName>USB_Link.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\APP\USB_Link.h</FilePath>
+            </File>
+            <File>
               <FileName>Motor_Control.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\APP\Motor_Control.c</FilePath>
@@ -796,6 +806,16 @@
               <FileName>bsp_ADC.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\APP\bsp_ADC.h</FilePath>
+            </File>
+            <File>
+              <FileName>Level_Detect.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\Level_Detect.c</FilePath>
+            </File>
+            <File>
+              <FileName>Level_Detect.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\APP\Level_Detect.h</FilePath>
             </File>
           </Files>
         </Group>

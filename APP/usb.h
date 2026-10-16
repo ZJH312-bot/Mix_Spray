@@ -11,6 +11,15 @@ extern "C" {
 // 帧头
 #define FRAME_HEAD 0xAC
 
+// 命令码 DATA[1]
+#define CMD_HOST_CMD       0x00  // 上位机命令帧
+#define CMD_HOST_FEEDBACK  0xFF  // 上位机反馈帧（上位机每收到一帧下位机上报就回一帧）
+
+// 帧长度：两种帧长度不同，用 长度 + 命令码 双重区分
+#define USB_CMD_FRAME_LEN   8    // 上位机命令帧：DATA[0..7]，DATA[7]=DATA[0..6]累加和
+#define USB_ACK_FRAME_LEN   9    // 上位机反馈帧：DATA[0..8]
+#define USB_RX_BUF_SIZE     9    // 接收缓冲，取最长帧
+
 
 typedef enum
 {
@@ -38,13 +47,14 @@ typedef struct
 #define	CLEA_BIT(x, bit)	(x &= ~(1 << bit))
 
 void USB_Rx_Parse(uint8_t *buf, uint32_t *len);
+void USB_Rx_Flush(void);
 void USB_SoftReset(void);
 // 组帧发送
  uint8_t USB_Tx_SendFrame(uint8_t cmd, uint8_t Motor_Control,uint8_t spray_motor_speed, uint8_t mix_motor_speed, 
-                        uint8_t Auto_continuous_time, uint8_t Auto_interval_time,uint8_t GROUND_STATE);
+                        uint8_t Auto_continuous_time, uint8_t Auto_interval_time,uint8_t GROUND_STATE, uint8_t level_state);
 
 extern System_State_data system_state_data;
-extern uint8_t usb_Receive_buf[9];
+extern uint8_t usb_Receive_buf[USB_RX_BUF_SIZE];
 extern uint32_t usb_Receive_Len;
 extern volatile uint8_t USB_Receive_flag ;
 

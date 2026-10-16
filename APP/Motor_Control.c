@@ -5,8 +5,8 @@
 // 电流限流阈值 (单位：mA，1ADC单位≈0.806mA)
 #define Motor_SPRAY_CURRENT_MAX_LIMIT     2000   // 喷涂电机最大工作电流
 #define Motor_SPRAY_CURRENT_DANGER        2500   // 喷涂电机危险电流，触发快速降速
-#define Motor_MIX_CURRENT_MAX_LIMIT       3000    // 搅拌电机最大工作电流
-#define Motor_MIX_CURRENT_DANGER          3500    // 搅拌电机危险电流，触发快速降速
+#define Motor_MIX_CURRENT_MAX_LIMIT       2000    // 搅拌电机最大工作电流
+#define Motor_MIX_CURRENT_DANGER          2500    // 搅拌电机危险电流，触发快速降速
 
 #define Motor_SPRAY_MIX_CURRENT_HYSTERESIS    50    // 电流回差，防止限流频繁抖动
 #define Motor_SPRAY_MIX_DUTY_MIN          10     // 电机最小运行占空比
@@ -52,7 +52,7 @@ void Motor_SPRAY_SPEED_Set(uint8_t SPRAY_SPEED)
 
 /**
  * @brief  喷涂电机电流限流保护
- * @note   三级限流逻辑：危险级快速降速 → 限流级缓慢降速 → 正常级缓慢恢复
+ * @note   危险级快速降速 → 限流级缓慢降速 → 高于设定值缓降跟随 → 正常级缓升恢复
  */
 void Motor_SPRAY_Current_Limit(void) 
 {
@@ -95,7 +95,21 @@ void Motor_SPRAY_Current_Limit(void)
     }
     limit_cnt = 0;
     
-    // 第三级：电流恢复 → 缓慢回升到历史设定值
+    // 第三级：高于历史设定值 → 缓慢降到新设定值（修复"降占空比无响应"）
+    //        不依赖电流条件：用户下调目标占空比，运行占空比必须跟随下降
+    if (system_state_data.spray_motor_speed > system_state_data.History_SPRAY_duty_percent)
+    {
+        recover_cnt++;
+        if (recover_cnt >= DEBOUNCE_CNT)
+        {
+            recover_cnt = 0;
+            if (system_state_data.spray_motor_speed > Motor_SPRAY_MIX_DUTY_MIN)
+                system_state_data.spray_motor_speed -= 1;
+        }
+        return;
+    }
+
+    // 第四级：低于历史设定值且电流正常 → 缓慢回升（软启动 / 限流后恢复）
     if (current <= (Motor_SPRAY_CURRENT_MAX_LIMIT - Motor_SPRAY_MIX_CURRENT_HYSTERESIS)
         && system_state_data.spray_motor_speed < system_state_data.History_SPRAY_duty_percent) 
     {
@@ -114,7 +128,7 @@ void Motor_SPRAY_Current_Limit(void)
 
 /**
  * @brief  搅拌电机电流限流保护
- * @note   三级限流逻辑：危险级快速降速 → 限流级缓慢降速 → 正常级缓慢恢复
+ * @note   危险级快速降速 → 限流级缓慢降速 → 高于设定值缓降跟随 → 正常级缓升恢复
  */
 void Motor_MIX_Current_Limit(void) 
 {
@@ -157,7 +171,21 @@ void Motor_MIX_Current_Limit(void)
     }
     limit_cnt = 0;
     
-    // 第三级：电流恢复 → 缓慢回升到历史设定值
+    // 第三级：高于历史设定值 → 缓慢降到新设定值（修复"降占空比无响应"）
+    //        不依赖电流条件：用户下调目标占空比，运行占空比必须跟随下降
+    if (system_state_data.mix_motor_speed > system_state_data.History_MIX_duty_percent)
+    {
+        recover_cnt++;
+        if (recover_cnt >= DEBOUNCE_CNT)
+        {
+            recover_cnt = 0;
+            if (system_state_data.mix_motor_speed > Motor_SPRAY_MIX_DUTY_MIN)
+                system_state_data.mix_motor_speed -= 1;
+        }
+        return;
+    }
+
+    // 第四级：低于历史设定值且电流正常 → 缓慢回升（软启动 / 限流后恢复）
     if (current <= (Motor_MIX_CURRENT_MAX_LIMIT - Motor_SPRAY_MIX_CURRENT_HYSTERESIS)
         && system_state_data.mix_motor_speed < system_state_data.History_MIX_duty_percent) 
     {

@@ -37,9 +37,11 @@
 "ssh\usbd_ioreq.o"
 "ssh\usbd_cdc.o"
 "ssh\usb.o"
+"ssh\usb_link.o"
 "ssh\motor_control.o"
 "ssh\gnd_scan.o"
 "ssh\bsp_adc.o"
+"ssh\level_detect.o"
 --strict --scatter "SSH\SSH.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
